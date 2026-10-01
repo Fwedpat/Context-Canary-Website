@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Canary: find out when your Copilot chat starts forgetting</title>
+  <title>Context Canary: find out when your Copilot chat starts forgetting</title>
   <meta name="description" content="Canary adds one tiny instruction to a message you send to Copilot in VS Code and checks every reply for it. When Copilot stops following it, the bird starts to die.">
   <link rel="icon" href="assets/canary.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
@@ -19,7 +19,7 @@
 
   <header class="top">
     <div class="wrap top-inner">
-      <a class="brand" href="index.html"><img src="assets/canary.svg" alt="">Canary</a>
+      <a class="brand" href="index.html"><img src="assets/canary.svg" alt="">Context Canary</a>
       <nav aria-label="Main">
         <a href="#features">Features</a>
         <a href="#limits">Limits</a>
@@ -152,25 +152,6 @@
           <li><strong>It can't tell when Copilot compacts a chat.</strong>VS Code doesn't expose that to extensions.</li>
           <li><strong>Only chats where you used <code>@canary</code> are tracked.</strong>Nothing is added to your other chats, and nothing is installed or sent anywhere.</li>
         </ul>
-      </div>
-    </section>
-
-    <section class="section install" id="install">
-      <div class="wrap">
-        <h2>Install</h2>
-        <p class="section-intro">Canary isn't on the Marketplace yet, so you build the package from source and install it locally.</p>
-        <div class="install-grid">
-          <div>
-            <pre>npm install
-npm run package</pre>
-            <p class="fine">This creates <code>context-canary-0.0.3.vsix</code> in the project folder. You need Node.js to build it, not to run it.</p>
-          </div>
-          <ol>
-            <li>Open VS Code and run <strong>Extensions: Install from VSIX&hellip;</strong> from the Command Palette.</li>
-            <li>Choose <code>context-canary-0.0.3.vsix</code> and reload the window.</li>
-            <li>Click the bottom-right bird and choose <strong>Add to Chat</strong> in its window, or type <code>@canary</code> and your message in a chat. Tell it your name when asked.</li>
-          </ol>
-        </div>
       </div>
     </section>
   </main>
