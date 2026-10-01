@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docs | Canary</title>
+  <meta name="description" content="How to install and use Canary, how Copilot's replies are checked, its commands and settings, and what to know before relying on it.">
+  <link rel="icon" href="assets/canary.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="top">
+    <div class="wrap top-inner">
+      <a class="brand" href="index.html"><img src="assets/canary.svg" alt="">Canary</a>
+      <nav aria-label="Main">
+        <a href="index.html#features">Features</a>
+        <a href="index.html#limits">Limits</a>
+        <a href="index.html#install">Install</a>
+        <a href="docs.html" aria-current="page">Docs</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap doc">
+    <nav class="doc-nav" aria-label="On this page">
+      <a href="#install">Install</a>
+      <a href="#use">Using Canary</a>
+      <a href="#read">How replies are read</a>
+      <a href="#check">How replies are checked</a>
+      <a href="#commands">Commands</a>
+      <a href="#states">Bird states</a>
+      <a href="#settings">Settings</a>
+      <a href="#boundary">Limits</a>
+      <a href="#build">Build and test</a>
+    </nav>
+
+    <main id="main">
+      <h1>Canary docs</h1>
+      <p class="lede">Canary puts one small instruction at the start of a message, passes the message to Copilot, and checks whether Copilot keeps following the instruction as the chat grows. Copilot answers as normal, with all its tools. Canary only adds the instruction and keeps score.</p>
+
+      <h2 id="install">Install</h2>
+      <p>Canary isn't published to the Marketplace yet. Build a package from the source and install it locally. You need Node.js to build it, and VS Code 1.138 or later with Copilot Chat to use it.</p>
+      <pre>npm install
+npm run package</pre>
+      <ol>
+        <li>Open the Command Palette and run <strong>Extensions: Install from VSIX&hellip;</strong>.</li>
+        <li>Choose <code>context-canary-0.0.3.vsix</code> and reload VS Code.</li>
+      </ol>
+      <p>To work on it instead, open the project in VS Code and press <strong>F5</strong> to start an Extension Development Host.</p>
+
+      <h2 id="use">Using Canary</h2>
+      <h3>Start the canary</h3>
+      <p>Type <code>@canary</code> and your message. You can also click the bottom-right status bar bird to open its window, the same one that appears on hover, then choose <strong>Add to Chat</strong> to put <code>@canary</code> in the chat box without sending anything. The top-right bird in the Chat view still starts a new Canary chat.</p>
+      <pre>@canary Explain how closures work</pre>
+      <p>The first time, Canary asks what it should call you. It then sends your message to Copilot as a normal message, with a short instruction added above it.</p>
+      <p>You will see that line in the chat, because that is how Copilot receives it. Its wording is fixed and isn't in the settings. It is sent only once and never repeated, so Copilot has to keep remembering it. The <code>@canary</code> message before it only says &ldquo;Continue to prompt normally.&rdquo; It doesn't describe the instruction, because in testing Copilot treated instruction-like text in an earlier reply as suspicious.</p>
+      <h3>Keep chatting</h3>
+      <p>Carry on with Copilot as usual. You don't need <code>@canary</code> again. Each reply is checked and the bird updates. Hover it to see replies checked, followed and missed, and misses in a row.</p>
+      <h3>Use it in a chat you already have</h3>
+      <p>Use <code>@canary</code> for a message in any chat. Scoring starts at that message, and earlier replies aren't judged.</p>
+      <h3>Start a fresh chat</h3>
+      <p>Run <strong>Canary: New Chat with Canary</strong> from the Command Palette, the Chat view's title bar, or the bird's hover. It opens a new chat and offers to add <code>@canary</code>, unless you turned off <code>canary.promptOnNewChat</code>.</p>
+      <h3>Review before sending</h3>
+      <p>Turn off <code>canary.sendImmediately</code> and Canary puts the message in the chat box instead, so you can edit it and send it yourself. Keep the line above your message as it is, or the chat won't be tracked.</p>
+
+      <h2 id="read">How replies are read</h2>
+      <p>VS Code saves every chat as a file on your computer. Canary looks in the saved chats for the current window and finds one where a Copilot message starts with your instruction. It then checks every Copilot reply from that message on. Files that don't contain your instruction are never parsed, and unchanged files aren't read again.</p>
+      <p>Replies that are still being written, were cancelled or came back empty aren't scored, so they can never count as misses. Nothing is sent anywhere, and Canary doesn't keep the text of replies.</p>
+
+      <h2 id="check">How replies are checked</h2>
+      <p>A reply must contain your name as a whole word, ignoring case, so &ldquo;Fred&rdquo; matches but &ldquo;Frederick&rdquo; doesn't. Everything Copilot said in that reply counts, including text around tool calls. A reply that matches followed the instruction. One that doesn't missed it.</p>
+
+      <h2 id="commands">Commands</h2>
+      <table>
+        <thead><tr><th>Command</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td>Canary: Add to Chat</td><td>Prefills <code>@canary</code> in the chat box.</td></tr>
+          <tr><td>Canary: New Chat with Canary</td><td>Opens a new chat and offers to add <code>@canary</code>.</td></tr>
+          <tr><td>Canary: Set Name</td><td>Changes the name Canary uses.</td></tr>
+          <tr><td>Canary: Settings</td><td>Opens Canary's settings.</td></tr>
+          <tr><td>Canary: Clear Last Reading</td><td>Forgets tracked instructions and resets the bird.</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="states">Bird states</h2>
+      <table>
+        <thead><tr><th>State</th><th>When</th><th>Looks like</th></tr></thead>
+        <tbody>
+          <tr><td>Healthy</td><td>Copilot's last reply followed the instruction.</td><td>Yellow bird</td></tr>
+          <tr><td>Fading</td><td>The last reply missed it.</td><td>Bird on a warning background</td></tr>
+          <tr><td>Dying</td><td>Two replies in a row missed it (configurable).</td><td>Slumped bird on an error background</td></tr>
+        </tbody>
+      </table>
+      <p>A canary that follows the instruction again goes back to healthy, but the missed replies stay in the counts. The bird shows the most recently active tracked chat. You get a notification when the state gets worse.</p>
+
+      <h2 id="settings">Settings</h2>
+      <table>
+        <thead><tr><th>Setting</th><th>Default</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>canary.userName</code></td><td>empty</td><td>The name Canary asks Copilot to use. Asked for on first use.</td></tr>
+          <tr><td><code>canary.missesBeforeDying</code></td><td>2</td><td>Misses in a row before the bird is dying, from 2 to 10.</td></tr>
+          <tr><td><code>canary.sendImmediately</code></td><td>true</td><td>Send the message to Copilot straight away, or place it in the chat box for you to send.</td></tr>
+          <tr><td><code>canary.notifications</code></td><td>true</td><td>Notify when the canary gets worse.</td></tr>
+          <tr><td><code>canary.promptOnNewChat</code></td><td>true</td><td>Ask before adding <code>@canary</code> to chats started with the Canary command.</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="boundary">Limits</h2>
+      <ul>
+        <li><strong>Your message appears twice.</strong> First as your <code>@canary</code> message, then as the message Canary passes to Copilot. Canary asks VS Code to attach files and selections you referenced, and says so if another kind of attachment can't be carried over. Check that attachments arrived before relying on them.</li>
+        <li><strong>It reads a saved-chat format VS Code doesn't promise to keep.</strong> If it changes, chats are reported as unreadable, never as misses.</li>
+        <li><strong>The check is a text match,</strong> so a reply that includes the name without following the instruction properly still counts as followed.</li>
+        <li><strong>A miss shows that one early instruction was lost.</strong> It doesn't tell you what else was. A follow doesn't prove everything is remembered.</li>
+        <li><strong>It can't tell you when Copilot compacts a chat.</strong> VS Code doesn't expose that to extensions.</li>
+        <li><strong>Only chats where you used <code>@canary</code> are tracked.</strong> Other chats are never touched.</li>
+      </ul>
+      <p>Canary has no backend and collects no analytics. An earlier development version added a hook file to <code>~/.copilot/hooks</code>. This version removes it on startup if it finds it.</p>
+
+      <h2 id="build">Build and test</h2>
+      <pre>npm run test:unit   # matching, saved-chat reading, scoring and scanning
+npm test            # compile, lint, and tests inside VS Code
+npm run package     # build context-canary-0.0.3.vsix</pre>
+      <p><code>npm test</code> downloads a VS Code test build the first time it runs. The publisher in <code>package.json</code> is a local placeholder. Set your own and choose a license before publishing.</p>
+    </main>
+  </div>
+
+  <footer class="foot">
+    <div class="wrap foot-inner">
+      <span>Context Canary 0.0.3, a VS Code extension.</span>
+      <nav aria-label="Footer"><a href="index.html">Home</a><a href="index.html#install">Install</a><a href="index.html#limits">Limits</a></nav>
+    </div>
+  </footer>
+</body>
+</html>

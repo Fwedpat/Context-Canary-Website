@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Canary: find out when your Copilot chat starts forgetting</title>
+  <meta name="description" content="Canary adds one tiny instruction to a message you send to Copilot in VS Code and checks every reply for it. When Copilot stops following it, the bird starts to die.">
+  <link rel="icon" href="assets/canary.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="bird" viewBox="0 0 64 64"><path fill-rule="evenodd" d="M8 39 2 24l17 7c1-8 7-12 14-12h3c-1-8 4-13 11-13 8 0 13 7 10 15l6 3-8 5c-2 13-11 23-25 23-10 0-18-4-22-13Zm40-21a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M25 50h4l-3 8h5v4H18v-4h4Zm10 0h4l3 8h5v4H34v-4h4Z"/></symbol>
+    <symbol id="bird-dying" viewBox="0 0 64 64"><path fill-rule="evenodd" d="m6 44-4-17 17 8c4-8 12-11 22-8 6-8 17-5 18 4l4 5-7 3c-4 11-14 17-26 17-11 0-20-4-24-12Zm39-15-2 2 4 4-4 4 2 2 4-4 4 4 2-2-4-4 4-4-2-2-4 4Z"/><path d="m24 51 3-2 6 9 8-4 2 3-11 6Z"/></symbol>
+  </svg>
+
+  <header class="top">
+    <div class="wrap top-inner">
+      <a class="brand" href="index.html"><img src="assets/canary.svg" alt="">Canary</a>
+      <nav aria-label="Main">
+        <a href="#features">Features</a>
+        <a href="#limits">Limits</a>
+        <a href="#install">Install</a>
+        <a href="docs.html">Docs</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero wrap">
+      <div class="hero-copy">
+        <h1>Find out when your chat starts forgetting.</h1>
+        <p class="hero-lede">Canary adds one tiny instruction to a message you send to Copilot in VS Code and checks every reply for it. When Copilot stops following it, the bird starts to die, and you know the context is rotting.</p>
+        <div class="actions">
+          <a class="btn" href="#install">Install from VSIX</a>
+          <a class="link" href="docs.html">Read the docs</a>
+        </div>
+        <p class="fine">Needs VS Code 1.138 or later with Copilot Chat. Canary has no server and sends nothing anywhere.</p>
+      </div>
+      <div class="hero-bird" aria-hidden="true">
+        <img src="assets/canary.svg" alt="">
+        <span class="perch"></span>
+      </div>
+    </section>
+
+    <section class="demo wrap" aria-label="Sample of Canary inside VS Code">
+      <div class="window" id="demo" data-state="healthy">
+        <div class="win-title" aria-hidden="true">closures.ts &mdash; my-project &mdash; Visual Studio Code</div>
+        <div class="win-body">
+          <div class="win-chat">
+            <div class="chat-label" aria-hidden="true">Chat</div>
+            <div class="msg-user"><span class="mention">@canary</span> Explain closures</div>
+            <div class="chat-tag">Canary adds a short line above your message before sending it to Copilot.</div>
+
+            <div class="chat-set" data-chat="healthy">
+              <p class="chat-gap">12 replies later</p>
+              <div class="msg-user">Can I reset the counter?</div>
+              <div class="bot-name"><img src="assets/canary.svg" alt="">GitHub Copilot</div>
+              <p class="reply">Yes, <span class="hit">Fred</span>. Return an object with <code>next</code> and <code>reset</code>, or make <code>count</code> a parameter.</p>
+            </div>
+            <div class="chat-set" data-chat="fading" hidden>
+              <p class="chat-gap">13 replies later</p>
+              <div class="msg-user">Can I reset the counter?</div>
+              <div class="bot-name"><img src="assets/canary.svg" alt="">GitHub Copilot</div>
+              <p class="reply">Yes. Return an object with <code>next</code> and <code>reset</code>, or make <code>count</code> a parameter.</p>
+            </div>
+            <div class="chat-set" data-chat="dying" hidden>
+              <p class="chat-gap">14 replies later</p>
+              <div class="msg-user">Can I reset the counter?</div>
+              <p class="reply">Yes. Return an object with <code>next</code> and <code>reset</code>.</p>
+              <div class="msg-user">And start it at 10?</div>
+              <p class="reply">Pass the start value in: <code>counter(10)</code>.</p>
+            </div>
+          </div>
+          <div class="win-editor" aria-hidden="true">
+            <div class="tabs"><span class="tab tab-active">closures.ts</span><span class="tab">extension.ts</span></div>
+            <pre class="code"><span><i class="k">function</i> <i class="f">counter</i>() {</span><span>  <i class="k">let</i> <i class="v">count</i> = <i class="n">0</i>;</span><span>  <i class="k">return</i> () =&gt; ++<i class="v">count</i>;</span><span>}</span><span> </span><span><i class="k">const</i> <i class="v">next</i> = <i class="f">counter</i>();</span><span><i class="f">next</i>(); <i class="c">// 1</i></span><span><i class="f">next</i>(); <i class="c">// 2</i></span></pre>
+          </div>
+        </div>
+        <div class="overlay">
+          <div class="toast" data-toast>
+            <p></p>
+            <span class="toast-btn">New Chat with Canary</span>
+          </div>
+          <div class="tip">
+            <p class="tip-title">Canary: <span data-field="state">Healthy</span></p>
+            <p class="tip-line" data-field="line">Copilot's last reply still followed the instruction.</p>
+            <table class="tip-table">
+              <tr><th scope="row">Replies checked</th><td data-field="checked">13</td></tr>
+              <tr><th scope="row">Followed</th><td data-field="followed">13</td></tr>
+              <tr><th scope="row">Missed</th><td data-field="missed">0</td></tr>
+              <tr><th scope="row">Misses in a row</th><td data-field="streak">0</td></tr>
+            </table>
+            <p>Click the bird to keep this window open.</p>
+          </div>
+        </div>
+        <div class="statusbar" aria-hidden="true">
+          <div class="sb-group"><span class="sb-item">main</span><span class="sb-item">0 problems</span></div>
+          <div class="sb-group"><span class="sb-item">Ln 8, Col 12</span><span class="sb-item">Spaces: 2</span><span class="sb-item">TypeScript</span><span class="bird"><svg><use data-bird href="#bird"/></svg></span></div>
+        </div>
+      </div>
+      <div class="demo-controls" role="group" aria-label="Sample chat">
+        <span>Later in the chat</span>
+        <button type="button" data-state="healthy" aria-pressed="true">Still following</button>
+        <button type="button" data-state="fading" aria-pressed="false">One miss</button>
+        <button type="button" data-state="dying" aria-pressed="false">Two in a row</button>
+      </div>
+      <p class="demo-note">A made-up chat. The name is underlined here so you can spot it; the real chat doesn't do that. The bird is the last item in the status bar.</p>
+      <p class="sr-only" id="demo-summary" aria-live="polite"></p>
+    </section>
+
+    <section class="section" id="features">
+      <div class="wrap">
+        <h2>How it works</h2>
+        <p class="section-intro">Models don't forget all at once. Early instructions slip first. Canary plants one and watches whether it's still there.</p>
+        <div class="rows">
+          <div><h3><code>@canary</code> adds it</h3><p>Type <code>@canary</code> and your message. The first time, Canary asks what to call you. It then sends your message to Copilot with the instruction as its first lines.</p></div>
+          <div><h3>Copilot does the answering</h3><p>Your message is answered by Copilot itself, with agent mode, its tools, file edits and workspace search. Canary doesn't reply for it.</p></div>
+          <div><h3>Added once</h3><p>The instruction is sent with that one message and never repeated, so it has to survive as the chat grows.</p></div>
+          <div><h3>Every reply is checked</h3><p>Canary reads Copilot's replies from the chat VS Code saves on your machine and looks for your name in each one. Nothing is sent anywhere, and it doesn't keep the text.</p></div>
+          <div><h3>A bird that tells you</h3><p>It sits at the right end of the status bar. Yellow means the last reply followed the instruction, amber means it missed, red means it missed twice in a row. Hover for the counts.</p></div>
+          <div><h3>Warnings</h3><p>When the canary gets worse you get a notification with a button for a fresh chat. It stays quiet while nothing changes.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="states">
+      <div class="wrap">
+        <h2>Three states</h2>
+        <p class="section-intro">The bird follows how Copilot's most recent replies treated the instruction.</p>
+        <div class="states">
+          <div><div class="state-strip"><span class="bird"><svg><use href="#bird"/></svg></span></div><h3>Healthy</h3><p class="range">last reply followed it</p><p>The instruction from your first message is still getting through.</p></div>
+          <div><div class="state-strip"><span class="bird fading"><svg><use href="#bird"/></svg></span></div><h3>Fading</h3><p class="range">one miss</p><p>One slip can be chance. Watch the next reply.</p></div>
+          <div><div class="state-strip"><span class="bird dying"><svg><use href="#bird-dying"/></svg></span></div><h3>Dying</h3><p class="range">two misses in a row</p><p>Copilot has lost the instruction, and likely other early context. Start a new chat.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="limits">
+      <div class="wrap limits">
+        <div>
+          <h2>What to know</h2>
+          <p class="section-intro">Canary can only work with what VS Code shows extensions. That shapes a few things.</p>
+        </div>
+        <ul>
+          <li><strong>Your message shows up twice.</strong>First as your <code>@canary</code> message, then as the message Canary passes to Copilot, with the instruction above it. Check that any attachments arrived.</li>
+          <li><strong>It reads a saved-chat format VS Code doesn't promise to keep.</strong>If it changes, chats are reported as unreadable, never as misses.</li>
+          <li><strong>The check is a text match, and a miss isn't everything.</strong>Your name has to appear as a whole word. A miss shows one instruction was lost, not what else was.</li>
+          <li><strong>It can't tell when Copilot compacts a chat.</strong>VS Code doesn't expose that to extensions.</li>
+          <li><strong>Only chats where you used <code>@canary</code> are tracked.</strong>Nothing is added to your other chats, and nothing is installed or sent anywhere.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section install" id="install">
+      <div class="wrap">
+        <h2>Install</h2>
+        <p class="section-intro">Canary isn't on the Marketplace yet, so you build the package from source and install it locally.</p>
+        <div class="install-grid">
+          <div>
+            <pre>npm install
+npm run package</pre>
+            <p class="fine">This creates <code>context-canary-0.0.3.vsix</code> in the project folder. You need Node.js to build it, not to run it.</p>
+          </div>
+          <ol>
+            <li>Open VS Code and run <strong>Extensions: Install from VSIX&hellip;</strong> from the Command Palette.</li>
+            <li>Choose <code>context-canary-0.0.3.vsix</code> and reload the window.</li>
+            <li>Click the bottom-right bird and choose <strong>Add to Chat</strong> in its window, or type <code>@canary</code> and your message in a chat. Tell it your name when asked.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap foot-inner">
+      <span>Context Canary 0.0.3, a VS Code extension.</span>
+      <nav aria-label="Footer"><a href="docs.html">Docs</a><a href="#install">Install</a><a href="#limits">Limits</a></nav>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
